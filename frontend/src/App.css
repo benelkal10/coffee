@@ -104,3 +104,26 @@
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
   }
 }
+
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.theme-toggle-btn:hover {
+  color: var(--text-primary);
+  background: rgba(217, 119, 6, 0.05);
+  border-color: var(--border-focus);
+}
+

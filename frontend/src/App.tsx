@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
-import { Coffee, ClipboardList, FileBarChart, BarChart3 } from 'lucide-react';
+import { Coffee, ClipboardList, FileBarChart, BarChart3, Sun, Moon } from 'lucide-react';
 import Home from './pages/Home';
 import Order from './pages/Order';
 import Reports from './pages/Reports';
@@ -7,6 +8,19 @@ import Histogram from './pages/Histogram';
 import './App.css';
 
 export default function App() {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
   return (
     <Router>
       <div className="app-container">
@@ -37,6 +51,11 @@ export default function App() {
               <span>Analytics</span>
             </NavLink>
           </nav>
+
+          <button onClick={toggleTheme} className="theme-toggle-btn" aria-label="Toggle Theme">
+            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+          </button>
           
           <div className="sidebar-footer">
             <div className="status-badge">

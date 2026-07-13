@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
-    "dev": "nodemon src/app.ts"
+    "dev": "nodemon src/app.ts",
+    "test": "tsc && node --test dist/test/**/*.js"
   },
   "dependencies": {
     "bullmq": "^5.8.2",

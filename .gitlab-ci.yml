@@ -1,0 +1,43 @@
+stages:
+  - test
+  - build
+
+cache:
+  key:
+    files:
+      - backend/package-lock.json
+      - frontend/package-lock.json
+  paths:
+    - backend/node_modules/
+    - frontend/node_modules/
+
+default:
+  image: node:18-alpine
+
+backend-test:
+  stage: test
+  script:
+    - cd backend
+    - npm ci
+    - npm test
+
+frontend-test:
+  stage: test
+  script:
+    - cd frontend
+    - npm ci
+    - npm test
+
+backend-build:
+  stage: build
+  script:
+    - cd backend
+    - npm ci
+    - npm run build
+
+frontend-build:
+  stage: build
+  script:
+    - cd frontend
+    - npm ci
+    - npm run build

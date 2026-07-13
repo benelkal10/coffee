@@ -89,7 +89,7 @@ export default function Reports() {
   return (
     <div className="fade-in" style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, background: 'linear-gradient(to right, #f5efe6, #d97706)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, background: 'linear-gradient(to right, var(--text-primary), var(--accent-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
           Monthly Reports
         </h1>
         <p style={{ color: 'var(--text-secondary)', margin: '0.5rem 0 0 0' }}>Query and export monthly coffee preparation logs to Excel spreadsheets.</p>
