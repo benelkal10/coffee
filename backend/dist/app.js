@@ -11,6 +11,7 @@ const coffeeWorker_1 = require("./workers/coffeeWorker");
 const orderController_1 = require("./controllers/orderController");
 const reportsController_1 = require("./controllers/reportsController");
 const histogramController_1 = require("./controllers/histogramController");
+const rateLimiter_1 = require("./middleware/rateLimiter");
 const app = (0, express_1.default)();
 const port = process.env.PORT || 5000;
 // Connect to Database
@@ -21,7 +22,7 @@ const port = process.env.PORT || 5000;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 // Routes
-app.post('/api/orders', orderController_1.handleCreateOrder);
+app.post('/api/orders', (0, rateLimiter_1.orderRateLimiter)(10, 60 * 1000), orderController_1.handleCreateOrder);
 app.get('/api/orders', orderController_1.handleGetOrders);
 app.get('/api/reports', reportsController_1.handleGetReports);
 app.get('/api/histogram', histogramController_1.handleGetHistogram);

@@ -8,7 +8,7 @@ services:
     container_name: coffee_db
     restart: always
     ports:
-      - "27017:27017" # Exposed for direct database connection
+      - "127.0.0.1:27017:27017" # Exposed only to localhost for direct database connection
     volumes:
       - mongo_data:/data/db # Database persistence volume
 
@@ -18,7 +18,7 @@ services:
     container_name: coffee_queue
     restart: always
     ports:
-      - "6379:6379" # Exposed for direct queue monitoring
+      - "127.0.0.1:6379:6379" # Exposed only to localhost for direct queue monitoring
     volumes:
       - redis_data:/data # Queue state persistence volume
 

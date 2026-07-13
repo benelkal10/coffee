@@ -6,6 +6,7 @@ import { startCoffeeWorker } from './workers/coffeeWorker';
 import { handleCreateOrder, handleGetOrders } from './controllers/orderController';
 import { handleGetReports } from './controllers/reportsController';
 import { handleGetHistogram } from './controllers/histogramController';
+import { orderRateLimiter } from './middleware/rateLimiter';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -21,7 +22,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.post('/api/orders', handleCreateOrder);
+app.post('/api/orders', orderRateLimiter(10, 60 * 1000), handleCreateOrder);
 app.get('/api/orders', handleGetOrders);
 app.get('/api/reports', handleGetReports);
 app.get('/api/histogram', handleGetHistogram);

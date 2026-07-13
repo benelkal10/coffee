@@ -22,4 +22,8 @@ const OrderSchema = new Schema<IOrder>({
   completedAt: { type: Date }
 });
 
+// Indexes for query performance
+OrderSchema.index({ createdAt: -1 });
+OrderSchema.index({ done: 1, createdAt: -1 });
+
 export const Order = model<IOrder>('Order', OrderSchema);
