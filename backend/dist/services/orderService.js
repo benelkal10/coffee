@@ -53,13 +53,20 @@ const createOrder = async (orderData) => {
         done: false,
     });
     await order.save();
-    // Add to BullMQ
-    await exports.coffeeQueue.add('prepare-coffee', { orderId: order._id }, {
-        priority,
-        delay: delayMs,
-        attempts: 3,
-        backoff: 5000,
-    });
+    try {
+        // Add to BullMQ
+        await exports.coffeeQueue.add('prepare-coffee', { orderId: order._id }, {
+            priority,
+            delay: delayMs,
+            attempts: 3,
+            backoff: 5000,
+        });
+    }
+    catch (queueError) {
+        // Rollback MongoDB write if enqueuing fails
+        await order_1.Order.deleteOne({ _id: order._id });
+        throw queueError;
+    }
     return order;
 };
 exports.createOrder = createOrder;

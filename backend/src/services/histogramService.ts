@@ -2,11 +2,18 @@ import { Order } from '../models/order';
 import { mockOrders } from '../mock/mockStore';
 
 export const getOrdersHistogram = async () => {
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
   if (process.env.USE_MOCK === 'true') {
     const counts: { [key: string]: number } = {};
-    mockOrders.forEach((order) => {
-      counts[order.userName] = (counts[order.userName] || 0) + 1;
-    });
+    const cutOffTime = thirtyDaysAgo.getTime();
+    
+    mockOrders
+      .filter((o) => o.createdAt.getTime() >= cutOffTime)
+      .forEach((order) => {
+        counts[order.userName] = (counts[order.userName] || 0) + 1;
+      });
 
     const sortedUsers = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
     const labels = sortedUsers;
@@ -16,6 +23,11 @@ export const getOrdersHistogram = async () => {
   }
 
   const aggregation = await Order.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: thirtyDaysAgo },
+      },
+    },
     {
       $group: {
         _id: '$userName',

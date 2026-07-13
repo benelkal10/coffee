@@ -12,4 +12,7 @@ const OrderSchema = new mongoose_1.Schema({
     createdAt: { type: Date, default: Date.now },
     completedAt: { type: Date }
 });
+// Indexes for query performance
+OrderSchema.index({ createdAt: -1 });
+OrderSchema.index({ done: 1, createdAt: -1 });
 exports.Order = (0, mongoose_1.model)('Order', OrderSchema);

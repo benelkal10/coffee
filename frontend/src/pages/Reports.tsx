@@ -44,10 +44,17 @@ export default function Reports() {
       // Generate worksheet
       const worksheet = XLSX.utils.json_to_sheet(exportData);
       
-      // Auto-fit column widths
-      const colWidths = Object.keys(exportData[0] || {}).map(key => ({
-        wch: Math.max(key.length, ...exportData.map((row: any) => String(row[key] || '').length)) + 2
-      }));
+      // Auto-fit column widths in a single pass
+      const colWidths = Object.keys(exportData[0] || {}).map(key => {
+        let maxLen = key.length;
+        for (let i = 0; i < exportData.length; i++) {
+          const valLen = String(exportData[i][key] || '').length;
+          if (valLen > maxLen) {
+            maxLen = valLen;
+          }
+        }
+        return { wch: maxLen + 2 };
+      });
       worksheet['!cols'] = colWidths;
 
       // Generate workbook and download
