@@ -46,7 +46,7 @@ export default function Home() {
     <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, background: 'linear-gradient(to right, #f5efe6, #d97706)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, background: 'linear-gradient(to right, var(--text-primary), var(--accent-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Smart Bar Dashboard
           </h1>
           <p style={{ color: 'var(--text-secondary)', margin: '0.5rem 0 0 0' }}>Monitor real-time coffee orders and brewing queues.</p>
@@ -79,7 +79,7 @@ export default function Home() {
           width: '120px',
           height: '120px',
           borderRadius: '50%',
-          background: activeOrder ? 'radial-gradient(circle, rgba(217, 119, 6, 0.2) 0%, rgba(22, 18, 16, 0.8) 70%)' : 'rgba(22, 18, 16, 0.8)',
+          background: activeOrder ? 'radial-gradient(circle, rgba(217, 119, 6, 0.2) 0%, var(--bg-secondary) 70%)' : 'var(--bg-secondary)',
           border: `2px solid ${activeOrder ? 'var(--accent-primary)' : 'var(--border-color)'}`,
           display: 'flex',
           justifyContent: 'center',
@@ -161,7 +161,7 @@ export default function Home() {
                         <span style={{ fontWeight: 600 }}>{order.userName}</span>
                         <span style={{
                           fontSize: '0.7rem',
-                          background: order.role === 'boss' ? 'rgba(217, 119, 6, 0.2)' : 'rgba(255,255,255,0.05)',
+                          background: order.role === 'boss' ? 'rgba(217, 119, 6, 0.2)' : 'var(--border-color)',
                           color: order.role === 'boss' ? 'var(--accent-secondary)' : 'var(--text-secondary)',
                           padding: '0.15rem 0.4rem',
                           borderRadius: '4px',

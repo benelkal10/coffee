@@ -13,6 +13,23 @@
   --danger: #ef4444;
   --glass-backdrop: blur(16px);
   --font-family: 'Outfit', sans-serif;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='light'] {
+  --bg-primary: #fbf9f6;
+  --bg-secondary: #f3ede2;
+  --bg-card: rgba(243, 237, 226, 0.75);
+  --border-color: rgba(180, 100, 10, 0.15);
+  --border-focus: rgba(180, 100, 10, 0.5);
+  --text-primary: #3d2f26;
+  --text-secondary: #8c786a;
+  --accent-primary: #b45309;
+  --accent-secondary: #d97706;
+  --accent-glow: rgba(180, 100, 10, 0.1);
+  --success: #059669;
+  --danger: #dc2626;
+  --shadow-color: rgba(61, 47, 38, 0.08);
 }
 
 * {
@@ -53,7 +70,7 @@ body {
   -webkit-backdrop-filter: var(--glass-backdrop);
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px 0 var(--shadow-color);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

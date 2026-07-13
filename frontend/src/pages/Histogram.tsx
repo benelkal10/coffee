@@ -46,7 +46,7 @@ export default function Histogram() {
     <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, background: 'linear-gradient(to right, #f5efe6, #d97706)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, background: 'linear-gradient(to right, var(--text-primary), var(--accent-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Analytics & Stats
           </h1>
           <p style={{ color: 'var(--text-secondary)', margin: '0.5rem 0 0 0' }}>Visualize coffee ordering frequencies per team member.</p>
@@ -109,7 +109,7 @@ export default function Histogram() {
                         y1={y} 
                         x2={chartWidth - paddingRight} 
                         y2={y} 
-                        stroke="rgba(255,255,255,0.05)" 
+                        stroke="var(--border-color)" 
                         strokeWidth="1"
                       />
                       <text 
