@@ -126,28 +126,39 @@ export default function Order() {
           />
         </div>
 
-        {/* Role select */}
+        {/* Role select (Radio buttons) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Role</label>
-          <select 
-            value={role}
-            onChange={(e) => {
-              setRole(e.target.value as 'employee' | 'boss');
-              setPassword('');
-            }}
-            style={{
-              background: 'var(--bg-secondary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '8px',
-              padding: '0.75rem 1rem',
-              color: 'var(--text-primary)',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="employee">Employee (Normal Queue)</option>
-            <option value="boss">Boss (VIP Queue - Password Required)</option>
-          </select>
+          <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.25rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
+              <input 
+                type="radio" 
+                name="role" 
+                value="employee" 
+                checked={role === 'employee'} 
+                onChange={() => {
+                  setRole('employee');
+                  setPassword('');
+                }}
+                style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
+              />
+              <span>Employee (Normal Queue)</span>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
+              <input 
+                type="radio" 
+                name="role" 
+                value="boss" 
+                checked={role === 'boss'} 
+                onChange={() => {
+                  setRole('boss');
+                  setPassword('');
+                }}
+                style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
+              />
+              <span>Boss (VIP Queue)</span>
+            </label>
+          </div>
         </div>
 
         {/* Password input (only if Boss) */}
@@ -174,25 +185,33 @@ export default function Order() {
           </div>
         )}
 
-        {/* Time select */}
+        {/* Time select (Radio buttons) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Preparation Time</label>
-          <select 
-            value={timeType}
-            onChange={(e) => setTimeType(e.target.value as 'now' | 'later')}
-            style={{
-              background: 'var(--bg-secondary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '8px',
-              padding: '0.75rem 1rem',
-              color: 'var(--text-primary)',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="now">Prepare Now</option>
-            <option value="later">Prepare Later (Delayed Job)</option>
-          </select>
+          <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.25rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
+              <input 
+                type="radio" 
+                name="timeType" 
+                value="now" 
+                checked={timeType === 'now'} 
+                onChange={() => setTimeType('now')}
+                style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
+              />
+              <span>Prepare Now</span>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
+              <input 
+                type="radio" 
+                name="timeType" 
+                value="later" 
+                checked={timeType === 'later'} 
+                onChange={() => setTimeType('later')}
+                style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
+              />
+              <span>Prepare Later (Delayed Job)</span>
+            </label>
+          </div>
         </div>
 
         {/* Delay Minutes input (only if Later) */}
