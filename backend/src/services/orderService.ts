@@ -3,6 +3,7 @@ import { redisConnection } from '../config/redis';
 import { Order } from '../models/order';
 import { mockOrders, mockQueue } from '../mock/mockStore';
 import { logger } from '../utils/logger';
+import { UnauthorizedError } from '../utils/errors';
 
 export const coffeeQueue = process.env.USE_MOCK === 'true'
   ? null as any
@@ -26,7 +27,7 @@ export const createOrder = async (orderData: {
     if (password === bossPassword) {
       priority = 1; // Higher priority
     } else {
-      throw new Error('Incorrect boss password');
+      throw new UnauthorizedError('Incorrect boss password');
     }
   }
 
