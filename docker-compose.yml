@@ -17,6 +17,7 @@ services:
     image: redis:alpine
     container_name: coffee_queue
     restart: always
+    command: redis-server --appendonly yes
     ports:
       - "127.0.0.1:6379:6379" # Exposed only to localhost for direct queue monitoring
     volumes:
