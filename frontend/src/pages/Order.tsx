@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import Card from '../components/Card';
+import Button from '../components/Button';
+import Alert from '../components/Alert';
+import Input from '../components/Input';
 
 export default function Order() {
   const [userName, setUserName] = useState('');
@@ -82,184 +85,122 @@ export default function Order() {
         <p style={{ color: 'var(--text-secondary)', margin: '0.5rem 0 0 0' }}>Request a fresh cup of coffee. Boss requests get priority.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="glass-panel" style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        
-        {/* Status Alerts */}
-        {validationError && (
-          <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--text-primary)', padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <AlertCircle size={20} style={{ color: 'var(--danger)' }} />
-            <span>{validationError}</span>
-          </div>
-        )}
-        {submitError && (
-          <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--text-primary)', padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <AlertCircle size={20} style={{ color: 'var(--danger)' }} />
-            <span>{submitError}</span>
-          </div>
-        )}
-        {success && (
-          <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--success)', color: 'var(--text-primary)', padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <CheckCircle2 size={20} style={{ color: 'var(--success)' }} />
-            <span>Coffee order successfully sent to queue!</span>
-          </div>
-        )}
+      <Card variant="default" style={{ padding: '2.5rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          
+          {/* Status Alerts */}
+          {validationError && <Alert type="error" message={validationError} />}
+          {submitError && <Alert type="error" message={submitError} />}
+          {success && <Alert type="success" message="Coffee order successfully sent to queue!" />}
 
-        {/* User Name input */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Your Name</label>
-          <input 
+          {/* User Name input */}
+          <Input 
+            label="Your Name"
             type="text" 
             placeholder="Enter your name"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
-            style={{
-              background: 'var(--bg-secondary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '8px',
-              padding: '0.75rem 1rem',
-              color: 'var(--text-primary)',
-              outline: 'none',
-              transition: 'border-color 0.2s'
-            }}
-            onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
-            onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
           />
-        </div>
 
-        {/* Role select (Radio buttons) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Role</label>
-          <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.25rem' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
-              <input 
-                type="radio" 
-                name="role" 
-                value="employee" 
-                checked={role === 'employee'} 
-                onChange={() => {
-                  setRole('employee');
-                  setPassword('');
-                }}
-                style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
-              />
-              <span>Employee (Normal Queue)</span>
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
-              <input 
-                type="radio" 
-                name="role" 
-                value="boss" 
-                checked={role === 'boss'} 
-                onChange={() => {
-                  setRole('boss');
-                  setPassword('');
-                }}
-                style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
-              />
-              <span>Boss (VIP Queue)</span>
-            </label>
+          {/* Role select (Radio buttons) */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Role</label>
+            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.25rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
+                <input 
+                  type="radio" 
+                  name="role" 
+                  value="employee" 
+                  checked={role === 'employee'} 
+                  onChange={() => {
+                    setRole('employee');
+                    setPassword('');
+                  }}
+                  style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
+                />
+                <span>Employee (Normal Queue)</span>
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
+                <input 
+                  type="radio" 
+                  name="role" 
+                  value="boss" 
+                  checked={role === 'boss'} 
+                  onChange={() => {
+                    setRole('boss');
+                    setPassword('');
+                  }}
+                  style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
+                />
+                <span>Boss (VIP Queue)</span>
+              </label>
+            </div>
           </div>
-        </div>
 
-        {/* Password input (only if Boss) */}
-        {role === 'boss' && (
-          <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Authorization Password</label>
-            <input 
+          {/* Password input (only if Boss) */}
+          {role === 'boss' && (
+            <Input 
+              className="fade-in"
+              label="Authorization Password"
               type="password" 
               placeholder="Enter VIP Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{
-                background: 'var(--bg-secondary)',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
-                padding: '0.75rem 1rem',
-                color: 'var(--text-primary)',
-                outline: 'none',
-                transition: 'border-color 0.2s'
-              }}
-              onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
-              onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
             />
-          </div>
-        )}
+          )}
 
-        {/* Time select (Radio buttons) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Preparation Time</label>
-          <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.25rem' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
-              <input 
-                type="radio" 
-                name="timeType" 
-                value="now" 
-                checked={timeType === 'now'} 
-                onChange={() => setTimeType('now')}
-                style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
-              />
-              <span>Prepare Now</span>
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
-              <input 
-                type="radio" 
-                name="timeType" 
-                value="later" 
-                checked={timeType === 'later'} 
-                onChange={() => setTimeType('later')}
-                style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
-              />
-              <span>Prepare Later (Delayed Job)</span>
-            </label>
+          {/* Time select (Radio buttons) */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Preparation Time</label>
+            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.25rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
+                <input 
+                  type="radio" 
+                  name="timeType" 
+                  value="now" 
+                  checked={timeType === 'now'} 
+                  onChange={() => setTimeType('now')}
+                  style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
+                />
+                <span>Prepare Now</span>
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
+                <input 
+                  type="radio" 
+                  name="timeType" 
+                  value="later" 
+                  checked={timeType === 'later'} 
+                  onChange={() => setTimeType('later')}
+                  style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
+                />
+                <span>Prepare Later (Delayed Job)</span>
+              </label>
+            </div>
           </div>
-        </div>
 
-        {/* Delay Minutes input (only if Later) */}
-        {timeType === 'later' && (
-          <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Delay Minutes</label>
-            <input 
+          {/* Delay Minutes input (only if Later) */}
+          {timeType === 'later' && (
+            <Input 
+              className="fade-in"
+              label="Delay Minutes"
               type="number" 
               min="1"
               value={delayMinutes}
               onChange={(e) => setDelayMinutes(parseInt(e.target.value) || 1)}
-              style={{
-                background: 'var(--bg-secondary)',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
-                padding: '0.75rem 1rem',
-                color: 'var(--text-primary)',
-                outline: 'none',
-                transition: 'border-color 0.2s'
-              }}
-              onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
-              onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
             />
-          </div>
-        )}
+          )}
 
-        {/* Submit */}
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{
-            background: 'linear-gradient(to right, var(--accent-primary), var(--accent-secondary))',
-            border: 'none',
-            color: '#fff',
-            padding: '1rem',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: 700,
-            transition: 'all 0.3s',
-            marginTop: '1rem',
-            boxShadow: '0 4px 14px 0 var(--accent-glow)'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
-          onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-        >
-          {loading ? 'Submitting Order...' : 'Submit Coffee Request'}
-        </button>
-      </form>
+          {/* Submit */}
+          <Button 
+            type="submit" 
+            disabled={loading}
+            variant="primary"
+            style={{ marginTop: '1rem' }}
+          >
+            {loading ? 'Submitting Order...' : 'Submit Coffee Request'}
+          </Button>
+        </form>
+      </Card>
     </div>
   );
 }

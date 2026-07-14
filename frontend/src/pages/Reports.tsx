@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { AlertCircle, CheckCircle2, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import Card from '../components/Card';
+import Button from '../components/Button';
+import Alert from '../components/Alert';
+import Select from '../components/Select';
 
 export default function Reports() {
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -86,6 +90,9 @@ export default function Reports() {
     { value: 12, label: 'December' },
   ];
 
+  const yearOptions = years.map(y => ({ value: y, label: String(y) }));
+  const monthOptions = months;
+
   return (
     <div className="fade-in" style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
@@ -95,93 +102,40 @@ export default function Reports() {
         <p style={{ color: 'var(--text-secondary)', margin: '0.5rem 0 0 0' }}>Query and export monthly coffee preparation logs to Excel spreadsheets.</p>
       </div>
 
-      <form onSubmit={handleExport} className="glass-panel" style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        
-        {/* Status Alerts */}
-        {error && (
-          <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--text-primary)', padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <AlertCircle size={20} style={{ color: 'var(--danger)' }} />
-            <span>{error}</span>
-          </div>
-        )}
-        {success && (
-          <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--success)', color: 'var(--text-primary)', padding: '1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <CheckCircle2 size={20} style={{ color: 'var(--success)' }} />
-            <span>Excel sheet generated and downloaded!</span>
-          </div>
-        )}
+      <Card variant="default" style={{ padding: '2.5rem' }}>
+        <form onSubmit={handleExport} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Status Alerts */}
+          {error && <Alert type="error" message={error} />}
+          {success && <Alert type="success" message="Excel sheet generated and downloaded!" />}
 
-        {/* Year Select */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Select Year</label>
-          <select 
+          {/* Year Select */}
+          <Select
+            label="Select Year"
             value={year}
+            options={yearOptions}
             onChange={(e) => setYear(parseInt(e.target.value))}
-            style={{
-              background: 'var(--bg-secondary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '8px',
-              padding: '0.75rem 1rem',
-              color: 'var(--text-primary)',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            {years.map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
-        </div>
+          />
 
-        {/* Month Select */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Select Month</label>
-          <select 
+          {/* Month Select */}
+          <Select
+            label="Select Month"
             value={month}
+            options={monthOptions}
             onChange={(e) => setMonth(parseInt(e.target.value))}
-            style={{
-              background: 'var(--bg-secondary)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '8px',
-              padding: '0.75rem 1rem',
-              color: 'var(--text-primary)',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            {months.map((m) => (
-              <option key={m.value} value={m.value}>{m.label}</option>
-            ))}
-          </select>
-        </div>
+          />
 
-        {/* Export Button */}
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{
-            background: 'linear-gradient(to right, var(--accent-primary), var(--accent-secondary))',
-            border: 'none',
-            color: '#fff',
-            padding: '1rem',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontWeight: 700,
-            transition: 'all 0.3s',
-            marginTop: '1rem',
-            boxShadow: '0 4px 14px 0 var(--accent-glow)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.5rem'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
-          onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
-        >
-          <Download size={20} />
-          <span>{loading ? 'Exporting...' : 'Export to .xlsx'}</span>
-        </button>
-      </form>
+          {/* Export Button */}
+          <Button
+            type="submit"
+            disabled={loading}
+            variant="primary"
+            icon={<Download size={20} />}
+            style={{ marginTop: '1rem' }}
+          >
+            {loading ? 'Exporting...' : 'Export to .xlsx'}
+          </Button>
+        </form>
+      </Card>
     </div>
   );
 }
