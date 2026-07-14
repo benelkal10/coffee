@@ -11,7 +11,7 @@ export default function Home() {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/orders');
+      const response = await fetch('/api/orders');
       if (!response.ok) throw new Error('Failed to fetch orders');
       const data = await response.json();
       setOrders(data);
@@ -51,6 +51,34 @@ export default function Home() {
           Refresh
         </Button>
       </header>
+
+      {/* Queue Monitoring Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+        <Card style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Pending Orders
+          </span>
+          <span style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--accent-primary)' }}>
+            {orders.filter(order => !order.done).length}
+          </span>
+        </Card>
+        <Card style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Completed Orders
+          </span>
+          <span style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--success)' }}>
+            {orders.filter(order => order.done).length}
+          </span>
+        </Card>
+        <Card style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Total Orders Logged
+          </span>
+          <span style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+            {orders.length}
+          </span>
+        </Card>
+      </div>
 
       {/* Coffee Machine Visual State */}
       <Card variant="glass" style={{ padding: '2rem', display: 'flex', gap: '2rem', alignItems: 'center', flexWrap: 'wrap' }}>

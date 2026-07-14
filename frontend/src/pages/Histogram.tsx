@@ -15,7 +15,7 @@ export default function Histogram() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:5000/api/histogram');
+      const response = await fetch('/api/histogram');
       if (!response.ok) throw new Error('Failed to fetch histogram data');
       const data = await response.json();
       setChartData(data);

@@ -20,7 +20,7 @@ export default function Reports() {
     setSuccess(false);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/reports?year=${year}&month=${month}`);
+      const response = await fetch(`/api/reports?year=${year}&month=${month}`);
       if (!response.ok) {
         const errResult = await response.json();
         throw new Error(errResult.error || 'Failed to fetch report data.');
