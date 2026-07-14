@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
-import { Coffee, ClipboardList, FileBarChart, BarChart3, Sun, Moon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Coffee, ClipboardList, FileBarChart, BarChart3, Sun, Moon, ChevronLeft, ChevronRight, History } from 'lucide-react';
 import Home from './pages/Home';
 import Order from './pages/Order';
 import Reports from './pages/Reports';
 import Histogram from './pages/Histogram';
+import HistoryPage from './pages/History';
 import './App.css';
 
 export default function App() {
@@ -77,6 +78,10 @@ export default function App() {
               <ClipboardList size={20} style={{ flexShrink: 0 }} />
               <span>Place Order</span>
             </NavLink>
+            <NavLink to="/history" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+              <History size={20} style={{ flexShrink: 0 }} />
+              <span>Order History</span>
+            </NavLink>
             <NavLink to="/reports" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
               <FileBarChart size={20} style={{ flexShrink: 0 }} />
               <span>Reports</span>
@@ -104,6 +109,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/order" element={<Order />} />
+            <Route path="/history" element={<HistoryPage />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/histogram" element={<Histogram />} />
           </Routes>

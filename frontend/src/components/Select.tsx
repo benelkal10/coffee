@@ -47,7 +47,17 @@ export default function Select({ label, options, containerStyle, style, ...props
           props.onBlur?.(e);
         }}
         {...props}
-      />
+      >
+        {options.map((opt) => (
+          <option
+            key={opt.value}
+            value={opt.value}
+            style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}
+          >
+            {opt.label}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
