@@ -1,3 +1,5 @@
+import { logger } from '../utils/logger';
+
 export interface MockOrder {
   _id: string;
   userName: string;
@@ -45,23 +47,37 @@ const processMockQueue = async () => {
 
       const order = mockOrders.find((o) => o._id === nextJob.orderId);
       if (order) {
-        console.log(`[Mock Worker] Brewing coffee for: ${order.userName} (ID: ${order._id})`);
+        logger.info(`[Mock Worker] Brewing coffee for: ${order.userName} (ID: ${order._id})`);
         // Simulate 5 seconds coffee preparation
         await new Promise((resolve) => setTimeout(resolve, 5000));
         order.done = true;
         order.completedAt = new Date();
-        console.log(`[Mock Worker] Coffee ready for: ${order.userName} (ID: ${order._id})`);
+        logger.info(`[Mock Worker] Coffee ready for: ${order.userName} (ID: ${order._id})`);
       }
     }
-  } catch (err) {
-    console.error('[Mock Worker] Error:', err);
+  } catch (err: any) {
+    logger.error(`[Mock Worker] Error: ${err.message}`);
   } finally {
     isProcessing = false;
   }
 };
 
+let mockInterval: NodeJS.Timeout | null = null;
+
 // Tick every 1 second
 export const startMockWorker = () => {
-  console.log('[Mock Worker] Scheduled worker queue started.');
-  setInterval(processMockQueue, 1000);
+  logger.info('[Mock Worker] Scheduled worker queue started.');
+  mockInterval = setInterval(processMockQueue, 1000);
+  if (mockInterval && typeof mockInterval.unref === 'function') {
+    mockInterval.unref();
+  }
 };
+
+export const stopMockWorker = () => {
+  if (mockInterval) {
+    clearInterval(mockInterval);
+    mockInterval = null;
+    logger.info('[Mock Worker] Scheduled worker queue stopped.');
+  }
+};
+

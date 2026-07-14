@@ -5,6 +5,7 @@ import { connectDB } from './config/db';
 import { startCoffeeWorker } from './workers/coffeeWorker';
 import { recoverPendingOrders } from './services/orderService';
 import { errorHandler } from './middleware/errorHandler';
+import { logger } from './utils/logger';
 import { handleCreateOrder, handleGetOrders } from './controllers/orderController';
 import { handleGetReports } from './controllers/reportsController';
 import { handleGetHistogram } from './controllers/histogramController';
@@ -40,7 +41,13 @@ app.get('/health', (req, res) => {
 app.use(errorHandler);
 
 // Start Server
-app.listen(port, () => {
-  console.log(`Backend server running on port ${port}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
+    logger.info(`Backend server running on port ${port}`);
+  });
+}
+
+export { app };
+
+
 

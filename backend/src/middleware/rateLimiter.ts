@@ -2,6 +2,16 @@ import { Request, Response, NextFunction } from 'express';
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
+// Clean up expired entries every 10 minutes to prevent memory leaks
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, data] of rateLimitMap.entries()) {
+    if (now > data.resetTime) {
+      rateLimitMap.delete(ip);
+    }
+  }
+}, 10 * 60 * 1000).unref();
+
 export const orderRateLimiter = (limit: number, windowMs: number) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
@@ -21,3 +31,4 @@ export const orderRateLimiter = (limit: number, windowMs: number) => {
     return next();
   };
 };
+
