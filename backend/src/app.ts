@@ -4,6 +4,7 @@ import cors from 'cors';
 import { connectDB } from './config/db';
 import { startCoffeeWorker } from './workers/coffeeWorker';
 import { recoverPendingOrders } from './services/orderService';
+import { errorHandler } from './middleware/errorHandler';
 import { handleCreateOrder, handleGetOrders } from './controllers/orderController';
 import { handleGetReports } from './controllers/reportsController';
 import { handleGetHistogram } from './controllers/histogramController';
@@ -35,7 +36,11 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date() });
 });
 
+// Centralized error handler
+app.use(errorHandler);
+
 // Start Server
 app.listen(port, () => {
   console.log(`Backend server running on port ${port}`);
 });
+
