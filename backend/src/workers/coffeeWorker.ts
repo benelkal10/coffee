@@ -2,6 +2,7 @@ import { Worker, Job } from 'bullmq';
 import { redisConnection } from '../config/redis';
 import { Order } from '../models/order';
 import { startMockWorker } from '../mock/mockStore';
+import { logger } from '../utils/logger';
 
 export const startCoffeeWorker = () => {
   if (process.env.USE_MOCK === 'true') {
@@ -13,12 +14,12 @@ export const startCoffeeWorker = () => {
     'coffee-preparation',
     async (job: Job) => {
       const { orderId } = job.data;
-      console.log(`[Worker] Started preparing order: ${orderId}`);
+      logger.info(`[Worker] Started preparing order: ${orderId}`);
 
       // Fetch order from DB
       const order = await Order.findById(orderId);
       if (!order) {
-        console.error(`[Worker] Order not found: ${orderId}`);
+        logger.error(`[Worker] Order not found: ${orderId}`);
         throw new Error(`Order ${orderId} not found`);
       }
 
@@ -30,7 +31,7 @@ export const startCoffeeWorker = () => {
       order.completedAt = new Date();
       await order.save();
 
-      console.log(`[Worker] Order completed: ${orderId}`);
+      logger.info(`[Worker] Order completed: ${orderId}`);
     },
     {
       connection: redisConnection,
@@ -39,12 +40,13 @@ export const startCoffeeWorker = () => {
   );
 
   worker.on('completed', (job) => {
-    console.log(`[Worker] Job ${job.id} completed successfully`);
+    logger.info(`[Worker] Job ${job.id} completed successfully`);
   });
 
   worker.on('failed', (job, err) => {
-    console.error(`[Worker] Job ${job?.id} failed with error:`, err);
+    logger.error(`[Worker] Job ${job?.id} failed: ${err.message}`);
   });
 
   return worker;
 };
+

@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { connectDB } from './config/db';
 import { startCoffeeWorker } from './workers/coffeeWorker';
+import { recoverPendingOrders } from './services/orderService';
 import { handleCreateOrder, handleGetOrders } from './controllers/orderController';
 import { handleGetReports } from './controllers/reportsController';
 import { handleGetHistogram } from './controllers/histogramController';
@@ -11,8 +12,10 @@ import { orderRateLimiter } from './middleware/rateLimiter';
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Connect to Database
-connectDB();
+// Connect to Database & recover state
+connectDB().then(() => {
+  recoverPendingOrders();
+});
 
 // Start Queue Worker
 startCoffeeWorker();
