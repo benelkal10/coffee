@@ -34,7 +34,7 @@ export const createOrder = async (orderData: {
   const delayMs = timeType === 'later' ? delayMinutes * 60 * 1000 : 0;
 
   if (process.env.USE_MOCK === 'true') {
-    const mockOrder = {
+    const mockOrder: any = {
       _id: Math.random().toString(36).substring(2, 9),
       userName,
       role,
@@ -42,6 +42,7 @@ export const createOrder = async (orderData: {
       delayMinutes: timeType === 'later' ? delayMinutes : 0,
       priority,
       done: false,
+      status: 'pending',
       createdAt: new Date(),
     };
     mockOrders.push(mockOrder);

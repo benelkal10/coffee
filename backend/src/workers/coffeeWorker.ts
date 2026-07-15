@@ -23,11 +23,17 @@ export const startCoffeeWorker = () => {
         throw new Error(`Order ${orderId} not found`);
       }
 
+      // Update order status to brewing
+      order.status = 'brewing';
+      order.brewingStartedAt = new Date();
+      await order.save();
+
       // Simulate preparation delay (5 seconds)
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
       // Update order status to done
       order.done = true;
+      order.status = 'done';
       order.completedAt = new Date();
       await order.save();
 

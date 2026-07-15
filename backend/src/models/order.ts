@@ -7,6 +7,8 @@ export interface IOrder extends Document {
   delayMinutes: number;
   priority: number;
   done: boolean;
+  status: 'pending' | 'brewing' | 'done';
+  brewingStartedAt?: Date;
   createdAt: Date;
   completedAt?: Date;
 }
@@ -18,6 +20,8 @@ const OrderSchema = new Schema<IOrder>({
   delayMinutes: { type: Number, default: 0 },
   priority: { type: Number, default: 0 },
   done: { type: Boolean, default: false },
+  status: { type: String, enum: ['pending', 'brewing', 'done'], default: 'pending' },
+  brewingStartedAt: { type: Date },
   createdAt: { type: Date, default: Date.now },
   completedAt: { type: Date }
 });
