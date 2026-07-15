@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
 import { Coffee, ClipboardList, FileBarChart, BarChart3, Sun, Moon, ChevronLeft, ChevronRight, History } from 'lucide-react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { OrderProvider } from './context/OrderContext';
 import Home from './pages/Home';
 import Order from './pages/Order';
 import Reports from './pages/Reports';
@@ -60,8 +61,9 @@ export default function App() {
 
   return (
     <ThemeProvider theme={muiTheme}>
-      <Router>
-      <div className="app-container">
+      <OrderProvider>
+        <Router>
+        <div className="app-container">
         <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
           <div className="brand" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
@@ -141,6 +143,7 @@ export default function App() {
         </main>
       </div>
     </Router>
-  </ThemeProvider>
+  </OrderProvider>
+</ThemeProvider>
   );
 }

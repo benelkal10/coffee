@@ -14,8 +14,10 @@ import {
   Box,
 } from "@mui/material";
 import Card from "../components/Card";
+import { useOrders } from "../context/OrderContext";
 
 export default function Order() {
+  const { addOrder } = useOrders();
   const [userName, setUserName] = useState("");
   const [role, setRole] = useState<"employee" | "boss">("employee");
   const [password, setPassword] = useState("");
@@ -54,25 +56,13 @@ export default function Order() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userName: userName.trim(),
-          role,
-          password: role === "boss" ? password : undefined,
-          timeType,
-          delayMinutes: timeType === "later" ? delayMinutes : 0,
-        }),
+      await addOrder({
+        userName: userName.trim(),
+        role,
+        password: role === "boss" ? password : undefined,
+        timeType,
+        delayMinutes: timeType === "later" ? delayMinutes : 0,
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Failed to place order.");
-      }
 
       setSuccess(true);
       // Reset form fields
