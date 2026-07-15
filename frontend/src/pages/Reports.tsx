@@ -27,12 +27,22 @@ export default function Reports() {
 
     try {
       const response = await fetch(`/api/reports?year=${year}&month=${month}`);
+      let orders;
       if (!response.ok) {
-        const errResult = await response.json();
+        let errResult;
+        try {
+          errResult = await response.json();
+        } catch {
+          throw new Error(`Server returned an invalid error response (HTTP ${response.status}).`);
+        }
         throw new Error(errResult.error || 'Failed to fetch report data.');
       }
       
-      const orders = await response.json();
+      try {
+        orders = await response.json();
+      } catch {
+        throw new Error(`Server returned an invalid data format (HTTP ${response.status}).`);
+      }
 
       if (orders.length === 0) {
         throw new Error('No orders found for the selected month.');

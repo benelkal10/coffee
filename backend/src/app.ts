@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import { createServer } from 'http';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerDocument } from './config/swagger';
 import { connectDB } from './config/db';
@@ -12,9 +13,12 @@ import { handleCreateOrder, handleGetOrders } from './controllers/orderControlle
 import { handleGetReports } from './controllers/reportsController';
 import { handleGetHistogram } from './controllers/histogramController';
 import { orderRateLimiter } from './middleware/rateLimiter';
+import { initSocket } from './config/socket';
 
 const app = express();
 const port = process.env.PORT || 5000;
+const server = createServer(app);
+initSocket(server);
 
 // Connect to Database & recover state
 connectDB().then(() => {
@@ -47,12 +51,12 @@ app.use(errorHandler);
 
 // Start Server
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => {
+  server.listen(port, () => {
     logger.info(`Backend server running on port ${port}`);
   });
 }
 
-export { app };
+export { app, server };
 
 
 

@@ -1,4 +1,5 @@
 import { logger } from '../utils/logger';
+import { getIO } from '../config/socket';
 
 export interface MockOrder {
   _id: string;
@@ -52,12 +53,22 @@ const processMockQueue = async () => {
         order.status = 'brewing';
         order.brewingStartedAt = new Date();
         logger.info(`[Mock Worker] Brewing coffee for: ${order.userName} (ID: ${order._id})`);
+        try {
+          getIO().emit('order:updated', order);
+        } catch (e: any) {
+          logger.error(`[Mock Worker Socket Error] ${e.message}`);
+        }
         // Simulate 5 seconds coffee preparation
         await new Promise((resolve) => setTimeout(resolve, 5000));
         order.done = true;
         order.status = 'done';
         order.completedAt = new Date();
         logger.info(`[Mock Worker] Coffee ready for: ${order.userName} (ID: ${order._id})`);
+        try {
+          getIO().emit('order:updated', order);
+        } catch (e: any) {
+          logger.error(`[Mock Worker Socket Error] ${e.message}`);
+        }
       }
     }
   } catch (err: any) {
