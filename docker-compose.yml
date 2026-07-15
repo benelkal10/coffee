@@ -1,5 +1,4 @@
 # docker-compose configuration for Virtual Coffee Machine
-version: '3.8'
 
 services:
   # MongoDB Service - Stores orders state

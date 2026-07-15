@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerDocument } from './config/swagger';
 import { connectDB } from './config/db';
 import { startCoffeeWorker } from './workers/coffeeWorker';
 import { recoverPendingOrders } from './services/orderService';
@@ -31,6 +33,9 @@ app.post('/api/orders', orderRateLimiter(10, 60 * 1000), handleCreateOrder);
 app.get('/api/orders', handleGetOrders);
 app.get('/api/reports', handleGetReports);
 app.get('/api/histogram', handleGetHistogram);
+
+// Swagger API Documentation (mounted at /api)
+app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Health check
 app.get('/health', (req, res) => {
