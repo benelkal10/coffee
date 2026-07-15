@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
-import Card from '../components/Card';
-import Button from '../components/Button';
-import Alert from '../components/Alert';
-import Input from '../components/Input';
+import React, { useState } from "react";
+import {
+  TextField,
+  Button,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  Slider,
+  Alert,
+  CircularProgress,
+  Typography,
+  Box,
+} from "@mui/material";
+import Card from "../components/Card";
 
 export default function Order() {
-  const [userName, setUserName] = useState('');
-  const [role, setRole] = useState<'employee' | 'boss'>('employee');
-  const [password, setPassword] = useState('');
-  const [timeType, setTimeType] = useState<'now' | 'later'>('now');
-  const [delayMinutes, setDelayMinutes] = useState<number>(1);
-  
+  const [userName, setUserName] = useState("");
+  const [role, setRole] = useState<"employee" | "boss">("employee");
+  const [password, setPassword] = useState("");
+  const [timeType, setTimeType] = useState<"now" | "later">("now");
+  const [delayMinutes, setDelayMinutes] = useState<number>(5);
+
   const [validationError, setValidationError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
@@ -24,180 +35,370 @@ export default function Order() {
 
     // Form validations
     if (!userName.trim()) {
-      setValidationError('Name is required.');
+      setValidationError("Name is required.");
       return;
     }
     if (userName.trim().length < 2) {
-      setValidationError('Name must be at least 2 characters.');
+      setValidationError("Name must be at least 2 characters.");
       return;
     }
-    if (role === 'boss' && !password) {
-      setValidationError('Boss authorization password is required.');
+    if (role === "boss" && !password) {
+      setValidationError("Boss authorization password is required.");
       return;
     }
-    if (timeType === 'later' && (isNaN(delayMinutes) || delayMinutes < 1)) {
-      setValidationError('Delay must be at least 1 minute.');
+    if (timeType === "later" && (isNaN(delayMinutes) || delayMinutes < 1)) {
+      setValidationError("Delay must be at least 1 minute.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
+      const response = await fetch("/api/orders", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userName: userName.trim(),
           role,
-          password: role === 'boss' ? password : undefined,
+          password: role === "boss" ? password : undefined,
           timeType,
-          delayMinutes: timeType === 'later' ? delayMinutes : 0,
+          delayMinutes: timeType === "later" ? delayMinutes : 0,
         }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to place order.');
+        throw new Error(result.error || "Failed to place order.");
       }
 
       setSuccess(true);
       // Reset form fields
-      setUserName('');
-      setPassword('');
-      setTimeType('now');
-      setDelayMinutes(1);
+      setUserName("");
+      setPassword("");
+      setTimeType("now");
+      setDelayMinutes(5);
     } catch (err: any) {
-      setSubmitError(err.message || 'Server connection error.');
+      setSubmitError(err.message || "Server connection error.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fade-in" style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <div
+      className="fade-in"
+      style={{
+        maxWidth: "600px",
+        margin: "0 auto",
+        display: "flex",
+        flexDirection: "column",
+        gap: "2rem",
+      }}
+    >
       <div>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, background: 'linear-gradient(to right, var(--text-primary), var(--accent-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        <h1
+          style={{
+            fontSize: "2.5rem",
+            fontWeight: 800,
+            margin: 0,
+            background:
+              "linear-gradient(to right, var(--text-primary), var(--accent-primary))",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
           Order Coffee
         </h1>
-        <p style={{ color: 'var(--text-secondary)', margin: '0.5rem 0 0 0' }}>Request a fresh cup of coffee. Boss requests get priority.</p>
+        <p style={{ color: "var(--text-secondary)", margin: "0.5rem 0 0 0" }}>
+          Request a fresh cup of coffee. Boss requests get priority.
+        </p>
       </div>
 
-      <Card variant="default" style={{ padding: '2.5rem' }}>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          
+      <Card variant="default" style={{ padding: "2.5rem" }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}
+        >
           {/* Status Alerts */}
-          {validationError && <Alert type="error" message={validationError} />}
-          {submitError && <Alert type="error" message={submitError} />}
-          {success && <Alert type="success" message="Coffee order successfully sent to queue!" />}
+          {validationError && (
+            <Alert severity="warning" sx={{ borderRadius: "12px" }}>
+              {validationError}
+            </Alert>
+          )}
+          {submitError && (
+            <Alert severity="error" sx={{ borderRadius: "12px" }}>
+              {submitError}
+            </Alert>
+          )}
+          {success && (
+            <Alert severity="success" sx={{ borderRadius: "12px" }}>
+              Coffee order successfully sent to queue!
+            </Alert>
+          )}
 
           {/* User Name input */}
-          <Input 
+          <TextField
             label="Your Name"
-            type="text" 
-            placeholder="Enter your name"
+            variant="outlined"
+            fullWidth
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
+            required
+            placeholder="Enter your name"
+            sx={{
+              "& label": { color: "text.secondary" },
+              "& label.Mui-focused": { color: "primary.main" },
+              "& .MuiOutlinedInput-root": {
+                color: "text.primary",
+                "& fieldset": {
+                  borderColor: "var(--border-color)",
+                  borderRadius: "12px",
+                },
+                "&:hover fieldset": { borderColor: "var(--border-focus)" },
+                "&.Mui-focused fieldset": { borderColor: "primary.main" },
+              },
+            }}
           />
 
-          {/* Role select (Radio buttons) */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Role</label>
-            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.25rem' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
-                <input 
-                  type="radio" 
-                  name="role" 
-                  value="employee" 
-                  checked={role === 'employee'} 
-                  onChange={() => {
-                    setRole('employee');
-                    setPassword('');
-                  }}
-                  style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
-                />
-                <span>Employee (Normal Queue)</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
-                <input 
-                  type="radio" 
-                  name="role" 
-                  value="boss" 
-                  checked={role === 'boss'} 
-                  onChange={() => {
-                    setRole('boss');
-                    setPassword('');
-                  }}
-                  style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
-                />
-                <span>Boss (VIP Queue)</span>
-              </label>
-            </div>
-          </div>
+          {/* Role selection */}
+          <FormControl component="fieldset">
+            <FormLabel
+              component="legend"
+              sx={{
+                fontSize: "0.9rem",
+                fontWeight: 600,
+                color: "text.primary",
+                "&.Mui-focused": { color: "text.primary" },
+              }}
+            >
+              Role
+            </FormLabel>
+            <RadioGroup
+              row
+              name="role"
+              value={role}
+              onChange={(e) => {
+                setRole(e.target.value as "employee" | "boss");
+                setPassword("");
+              }}
+              sx={{ gap: "1.5rem", mt: 0.5 }}
+            >
+              <FormControlLabel
+                value="employee"
+                control={
+                  <Radio
+                    sx={{
+                      color: "var(--border-color)",
+                      "&.Mui-checked": { color: "primary.main" },
+                    }}
+                  />
+                }
+                label={
+                  <Typography
+                    sx={{ fontSize: "0.95rem", color: "text.primary" }}
+                  >
+                    Employee (Normal Queue)
+                  </Typography>
+                }
+              />
+              <FormControlLabel
+                value="boss"
+                control={
+                  <Radio
+                    sx={{
+                      color: "var(--border-color)",
+                      "&.Mui-checked": { color: "primary.main" },
+                    }}
+                  />
+                }
+                label={
+                  <Typography
+                    sx={{ fontSize: "0.95rem", color: "text.primary" }}
+                  >
+                    Boss (VIP Queue)
+                  </Typography>
+                }
+              />
+            </RadioGroup>
+          </FormControl>
 
           {/* Password input (only if Boss) */}
-          {role === 'boss' && (
-            <Input 
+          {role === "boss" && (
+            <TextField
               className="fade-in"
               label="Authorization Password"
-              type="password" 
-              placeholder="Enter VIP Password"
+              type="password"
+              variant="outlined"
+              fullWidth
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Enter VIP Password"
+              sx={{
+                "& label": { color: "text.secondary" },
+                "& label.Mui-focused": { color: "primary.main" },
+                "& .MuiOutlinedInput-root": {
+                  color: "text.primary",
+                  "& fieldset": {
+                    borderColor: "var(--border-color)",
+                    borderRadius: "12px",
+                  },
+                  "&:hover fieldset": { borderColor: "var(--border-focus)" },
+                  "&.Mui-focused fieldset": { borderColor: "primary.main" },
+                },
+              }}
             />
           )}
 
-          {/* Time select (Radio buttons) */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Preparation Time</label>
-            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.25rem' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
-                <input 
-                  type="radio" 
-                  name="timeType" 
-                  value="now" 
-                  checked={timeType === 'now'} 
-                  onChange={() => setTimeType('now')}
-                  style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
-                />
-                <span>Prepare Now</span>
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.95rem' }}>
-                <input 
-                  type="radio" 
-                  name="timeType" 
-                  value="later" 
-                  checked={timeType === 'later'} 
-                  onChange={() => setTimeType('later')}
-                  style={{ accentColor: 'var(--accent-primary)', width: '1.15rem', height: '1.15rem' }}
-                />
-                <span>Prepare Later (Delayed Job)</span>
-              </label>
-            </div>
-          </div>
+          {/* Time select */}
+          <FormControl component="fieldset">
+            <FormLabel
+              component="legend"
+              sx={{
+                fontSize: "0.9rem",
+                fontWeight: 600,
+                color: "text.primary",
+                "&.Mui-focused": { color: "text.primary" },
+              }}
+            >
+              Preparation Time
+            </FormLabel>
+            <RadioGroup
+              row
+              name="timeType"
+              value={timeType}
+              onChange={(e) => setTimeType(e.target.value as "now" | "later")}
+              sx={{ gap: "1.5rem", mt: 0.5 }}
+            >
+              <FormControlLabel
+                value="now"
+                control={
+                  <Radio
+                    sx={{
+                      color: "var(--border-color)",
+                      "&.Mui-checked": { color: "primary.main" },
+                    }}
+                  />
+                }
+                label={
+                  <Typography
+                    sx={{ fontSize: "0.95rem", color: "text.primary" }}
+                  >
+                    Prepare Now
+                  </Typography>
+                }
+              />
+              <FormControlLabel
+                value="later"
+                control={
+                  <Radio
+                    sx={{
+                      color: "var(--border-color)",
+                      "&.Mui-checked": { color: "primary.main" },
+                    }}
+                  />
+                }
+                label={
+                  <Typography
+                    sx={{ fontSize: "0.95rem", color: "text.primary" }}
+                  >
+                    Prepare Later (Delayed Job)
+                  </Typography>
+                }
+              />
+            </RadioGroup>
+          </FormControl>
 
-          {/* Delay Minutes input (only if Later) */}
-          {timeType === 'later' && (
-            <Input 
+          {/* Delay Minutes Slider (only if Later) */}
+          {timeType === "later" && (
+            <Box
               className="fade-in"
-              label="Delay Minutes"
-              type="number" 
-              min="1"
-              value={delayMinutes}
-              onChange={(e) => setDelayMinutes(parseInt(e.target.value) || 1)}
-            />
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.5rem",
+                mt: 0.5,
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: "0.9rem",
+                  fontWeight: 600,
+                  color: "text.primary",
+                }}
+              >
+                Delay Minutes:{" "}
+                <strong style={{ color: "var(--accent-secondary)" }}>
+                  {delayMinutes}m
+                </strong>
+              </Typography>
+              <Box sx={{ px: 1 }}>
+                <Slider
+                  value={delayMinutes}
+                  onChange={(_, val) => setDelayMinutes(val as number)}
+                  min={1}
+                  max={60}
+                  step={1}
+                  valueLabelDisplay="auto"
+                  marks={[
+                    { value: 1, label: "1m" },
+                    { value: 15, label: "15m" },
+                    { value: 30, label: "30m" },
+                    { value: 45, label: "45m" },
+                    { value: 60, label: "1h" },
+                  ]}
+                  sx={{
+                    color: "primary.main",
+                    "& .MuiSlider-thumb": {
+                      boxShadow: "0 0 8px var(--accent-glow)",
+                      "&:hover, &.Mui-focusVisible": {
+                        boxShadow: "0 0 0 8px rgba(217, 119, 6, 0.16)",
+                      },
+                    },
+                    "& .MuiSlider-markLabel": {
+                      color: "text.secondary",
+                      fontSize: "0.8rem",
+                    },
+                    "& .MuiSlider-valueLabel": {
+                      backgroundColor: "background.paper",
+                      color: "text.primary",
+                      border: "1px solid var(--border-color)",
+                    },
+                  }}
+                />
+              </Box>
+            </Box>
           )}
 
           {/* Submit */}
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
             disabled={loading}
-            variant="primary"
-            style={{ marginTop: '1rem' }}
+            fullWidth
+            sx={{
+              mt: 2,
+              py: 1.5,
+              borderRadius: "12px",
+              fontWeight: 700,
+              textTransform: "none",
+              fontSize: "1rem",
+              boxShadow: "0 4px 14px 0 var(--accent-glow)",
+              "&:hover": {
+                backgroundColor: "secondary.main",
+                boxShadow: "0 6px 20px 0 var(--accent-glow)",
+              },
+            }}
           >
-            {loading ? 'Submitting Order...' : 'Submit Coffee Request'}
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Submit Coffee Request"
+            )}
           </Button>
         </form>
       </Card>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
 import { Coffee, ClipboardList, FileBarChart, BarChart3, Sun, Moon, ChevronLeft, ChevronRight, History } from 'lucide-react';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Home from './pages/Home';
 import Order from './pages/Order';
 import Reports from './pages/Reports';
@@ -34,8 +35,32 @@ export default function App() {
     });
   };
 
+  const muiTheme = createTheme({
+    palette: {
+      mode: theme === 'dark' ? 'dark' : 'light',
+      primary: {
+        main: '#d97706', // var(--accent-primary)
+      },
+      secondary: {
+        main: '#f59e0b',
+      },
+      background: {
+        default: theme === 'dark' ? '#0d0b0a' : '#fbf9f6',
+        paper: theme === 'dark' ? '#161210' : '#f3ede2',
+      },
+      text: {
+        primary: theme === 'dark' ? '#f5efe6' : '#3d2f26',
+        secondary: theme === 'dark' ? '#a89f91' : '#8c786a',
+      },
+    },
+    typography: {
+      fontFamily: "'Outfit', sans-serif",
+    },
+  });
+
   return (
-    <Router>
+    <ThemeProvider theme={muiTheme}>
+      <Router>
       <div className="app-container">
         <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
           <div className="brand" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%' }}>
@@ -116,5 +141,6 @@ export default function App() {
         </main>
       </div>
     </Router>
+  </ThemeProvider>
   );
 }

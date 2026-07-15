@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
+import { 
+  Select, 
+  MenuItem, 
+  FormControl, 
+  InputLabel, 
+  Button, 
+  Alert, 
+  CircularProgress
+} from '@mui/material';
 import { Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import Card from '../components/Card';
-import Button from '../components/Button';
-import Alert from '../components/Alert';
-import Select from '../components/Select';
 
 export default function Reports() {
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -48,7 +54,7 @@ export default function Reports() {
       // Generate worksheet
       const worksheet = XLSX.utils.json_to_sheet(exportData);
       
-      // Auto-fit column widths in a single pass
+      // Auto-fit column widths
       const colWidths = Object.keys(exportData[0] || {}).map(key => {
         let maxLen = key.length;
         for (let i = 0; i < exportData.length; i++) {
@@ -90,9 +96,6 @@ export default function Reports() {
     { value: 12, label: 'December' },
   ];
 
-  const yearOptions = years.map(y => ({ value: y, label: String(y) }));
-  const monthOptions = months;
-
   return (
     <div className="fade-in" style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <div>
@@ -103,36 +106,92 @@ export default function Reports() {
       </div>
 
       <Card variant="default" style={{ padding: '2.5rem' }}>
-        <form onSubmit={handleExport} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <form onSubmit={handleExport} style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
           {/* Status Alerts */}
-          {error && <Alert type="error" message={error} />}
-          {success && <Alert type="success" message="Excel sheet generated and downloaded!" />}
+          {error && (
+            <Alert severity="error" sx={{ borderRadius: '12px' }}>
+              {error}
+            </Alert>
+          )}
+          {success && (
+            <Alert severity="success" sx={{ borderRadius: '12px' }}>
+              Excel sheet generated and downloaded!
+            </Alert>
+          )}
 
           {/* Year Select */}
-          <Select
-            label="Select Year"
-            value={year}
-            options={yearOptions}
-            onChange={(e) => setYear(parseInt(e.target.value))}
-          />
+          <FormControl fullWidth>
+            <InputLabel id="year-select-label" sx={{ color: 'text.secondary', '&.Mui-focused': { color: 'primary.main' } }}>Select Year</InputLabel>
+            <Select
+              labelId="year-select-label"
+              id="year-select"
+              value={year}
+              label="Select Year"
+              onChange={(e) => setYear(Number(e.target.value))}
+              sx={{
+                color: 'text.primary',
+                borderRadius: '12px',
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--border-color)' },
+                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--border-focus)' },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'primary.main' },
+              }}
+            >
+              {years.map((y) => (
+                <MenuItem key={y} value={y}>{y}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           {/* Month Select */}
-          <Select
-            label="Select Month"
-            value={month}
-            options={monthOptions}
-            onChange={(e) => setMonth(parseInt(e.target.value))}
-          />
+          <FormControl fullWidth>
+            <InputLabel id="month-select-label" sx={{ color: 'text.secondary', '&.Mui-focused': { color: 'primary.main' } }}>Select Month</InputLabel>
+            <Select
+              labelId="month-select-label"
+              id="month-select"
+              value={month}
+              label="Select Month"
+              onChange={(e) => setMonth(Number(e.target.value))}
+              sx={{
+                color: 'text.primary',
+                borderRadius: '12px',
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--border-color)' },
+                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'var(--border-focus)' },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'primary.main' },
+              }}
+            >
+              {months.map((m) => (
+                <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           {/* Export Button */}
           <Button
             type="submit"
+            variant="contained"
+            color="primary"
             disabled={loading}
-            variant="primary"
-            icon={<Download size={20} />}
-            style={{ marginTop: '1rem' }}
+            fullWidth
+            startIcon={!loading && <Download size={20} />}
+            sx={{
+              mt: 1,
+              py: 1.5,
+              borderRadius: '12px',
+              fontWeight: 700,
+              textTransform: 'none',
+              fontSize: '1rem',
+              boxShadow: '0 4px 14px 0 var(--accent-glow)',
+              '&:hover': {
+                backgroundColor: 'secondary.main',
+                boxShadow: '0 6px 20px 0 var(--accent-glow)',
+              },
+            }}
           >
-            {loading ? 'Exporting...' : 'Export to .xlsx'}
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Export to .xlsx'
+            )}
           </Button>
         </form>
       </Card>
