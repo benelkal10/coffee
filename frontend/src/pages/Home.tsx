@@ -1,56 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useOrders } from '../context/OrderContext';
 import { Coffee, RotateCcw } from 'lucide-react';
 import Button from '../components/Button';
 import Card from '../components/Card';
-import OrderItemCard, { OrderItem } from '../components/OrderItemCard';
+import OrderItemCard from '../components/OrderItemCard';
 
 export default function Home() {
-  const [orders, setOrders] = useState<OrderItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeProgress, setActiveProgress] = useState(0);
-
-  const fetchOrders = async () => {
-    try {
-      const response = await fetch('/api/orders');
-      if (!response.ok) throw new Error('Failed to fetch orders');
-      const data = await response.json();
-      setOrders(data);
-      setError(null);
-    } catch (err: any) {
-      setError(err.message || 'Error connecting to backend');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrders();
-    const interval = setInterval(fetchOrders, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Determine active order (the oldest unfinished order)
-  const activeOrder = orders.find(order => order.status === 'brewing') || 
-                      [...orders].reverse().find(order => !order.done && order.status !== 'done');
-
-  useEffect(() => {
-    if (!activeOrder || activeOrder.status !== 'brewing') {
-      setActiveProgress(0);
-      return;
-    }
-
-    const calculateProgress = () => {
-      const started = activeOrder.brewingStartedAt ? new Date(activeOrder.brewingStartedAt).getTime() : Date.now();
-      const elapsed = Date.now() - started;
-      const percentage = Math.min(100, Math.max(0, (elapsed / 5000) * 100));
-      setActiveProgress(percentage);
-    };
-
-    calculateProgress();
-    const progressInterval = setInterval(calculateProgress, 100);
-    return () => clearInterval(progressInterval);
-  }, [activeOrder?._id, activeOrder?.status, activeOrder?.brewingStartedAt]);
+  const { orders, loading, error, fetchOrders, activeOrder, activeProgress } = useOrders();
 
   return (
     <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useOrders } from '../context/OrderContext';
 import { RotateCcw, User, CheckCircle2, Clock } from 'lucide-react';
 import Card from '../components/Card';
 import Button from '../components/Button';
@@ -6,46 +7,13 @@ import Input from '../components/Input';
 import Select from '../components/Select';
 import Alert from '../components/Alert';
 
-interface OrderItem {
-  _id: string;
-  userName: string;
-  role: 'employee' | 'boss';
-  timeType: 'now' | 'later';
-  delayMinutes: number;
-  priority: number;
-  done: boolean;
-  createdAt: string;
-  completedAt?: string;
-}
-
 export default function HistoryPage() {
-  const [orders, setOrders] = useState<OrderItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { orders, loading, error, fetchOrders } = useOrders();
 
   // Filters and sorting states
   const [searchName, setSearchName] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [sortBy, setSortBy] = useState('date-desc');
-
-  const fetchOrders = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch('/api/orders');
-      if (!response.ok) throw new Error('Failed to fetch orders');
-      const data = await response.json();
-      setOrders(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to connect to server.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrders();
-  }, []);
 
   // Filter logic
   const filteredOrders = orders.filter((order) => {
