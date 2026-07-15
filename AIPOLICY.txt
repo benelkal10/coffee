@@ -2,7 +2,7 @@
 ---------------------------------
 
 1. רשימה של כלי AI בהם נעשה שימוש:
-- Google Gemini 3.5 Flash (באמצעות עוזר הפיתוח Antigravity)
+- Google Gemini 3.5 Flash / Google Antigravity Coding Assistant (באמצעות עוזר הפיתוח Antigravity)
 
 2. צורך ושימושים בפרויקט:
 - חקר וביקורת קוד (Security, Performance, Structure audit).
@@ -12,54 +12,42 @@
 - ייעול שאילתות מול מסד הנתונים על ידי הוספת אינדקסים (Mongoose Indexes) והגבלת טווחי אגרגציה.
 - שיפור ביצועים של לולאות בצד הלקוח (לולאת חישוב רוחב עמודות בייצוא קובץ Excel).
 - מחיקת קבצים מיותרים (הסרת main.js הריק).
+- הוספת תיעוד API אינטראקטיבי באמצעות Swagger/OpenAPI.
+- יישום עדכונים בזמן אמת וסנכרון תורים בין לקוחות באמצעות פרוטוקול WebSockets (Socket.io).
+- הוספת התראות דפדפן (HTML5 Web Notifications) והתראות ויזואליות (MUI Snackbar) ברגע שהקפה מוכן.
+- שימוש ב-React Context API לניהול הסטייט הגלובלי של התורים והפרדת הלוגיקה מה-UI באמצעות Custom Hooks.
+- הטמעת ספריית Material UI (MUI) לעיצוב רספונסיבי, אנימציות של הכנת קפה, רכיבי קלט חכמים ו-Progress Bars.
 
 3. פרומפטים שבהם נעשה שימוש:
 
 Act as an expert Full-Stack Software Engineer and DevOps Specialist. I need to build a "Virtual Coffee Machine" web application based on specific architecture requirements. We will build this step-by-step. For this first step, please review the requirements below and generate the project directory structure, the docker-compose.yml, and the Dockerfiles for the frontend and backend.
 
 1. Tech Stack Requirements:
-
 Frontend: React (TypeScript) using React Router.
-
 Backend: Node.js (Express) using TypeScript.
-
 Database: MongoDB.
-
 Queue Management: Redis using BullMQ (or Bull).
-
 DevOps: Docker & Docker Compose.
 
 2. Backend System Architecture (For Context):
-
 REST API: Modular architecture (Controllers, Services, Models/DTOs).
-
 Order Service & Queue Producer: Receives orders and adds them to a Redis queue. Must support Priority jobs (if role === "boss" and password is correct, bump priority) and Delayed jobs (delay preparation by X minutes).
-
 Queue Consumer: Processes orders from the queue (simulates coffee preparation with a time delay), then updates the order status in MongoDB to done: true.
-
 Reports Service: Endpoint to return all orders for a specific month.
-
 Histogram Service: Endpoint to return aggregated data (labels: user names, data: count of orders per user).
 
 3. Frontend System Architecture (For Context):
-
 Pages: Home, Order (form with validation for Name, Role [Employee/Boss], Password [if Boss], Time [Now/Later], Delay minutes), Reports (export monthly orders to an .xlsx Excel file), and Histogram (display a chart of orders per user with a refresh button).
 
 4. Infrastructure/DevOps Strict Rules:
-
 The entire system must spin up with a single docker-compose up command.
-
 Must use Docker Volumes for MongoDB and Redis to ensure data and queue persistence between restarts.
 
 Your Task Now:
 Please generate:
-
 A visual representation of the recommended folder structure.
-
 The docker-compose.yml file configuring the React app, Node/Express app, MongoDB, and Redis (with volumes).
-
 The Dockerfile for the Node.js Backend.
-
 The Dockerfile for the React Frontend.
 Ask me if I am ready to proceed to the Backend implementation once you output these files.
 

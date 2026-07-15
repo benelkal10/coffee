@@ -6,8 +6,8 @@ A smart, responsive web application for simulating a digital office coffee machi
 
 ## 🚀 Tech Stack
 
-- **Frontend:** React (TypeScript), React Router, Lucide Icons, SheetJS (xlsx) for exports.
-- **Backend:** Node.js (Express), TypeScript, Mongoose.
+- **Frontend:** React (TypeScript), React Router, Material UI (MUI), Socket.io-client, Lucide Icons, SheetJS (xlsx) for exports.
+- **Backend:** Node.js (Express), TypeScript, Mongoose, Socket.io, Swagger UI & OpenAPI 3.0 specification (`swagger-ui-express`, `swagger-jsdoc`).
 - **Queue/Broker:** Redis, BullMQ (Priority & Delayed queues).
 - **Database:** MongoDB.
   * **Database Choice Rationale:** MongoDB was selected because coffee orders are document-oriented records. Storing them as JSON documents in a schema-flexible store allows adding custom order attributes (e.g. coffee type, milk, sugar level) in the future without database migrations. It integrates seamlessly with Node.js via Mongoose.

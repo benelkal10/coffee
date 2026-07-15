@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { io } from 'socket.io-client';
+import { Snackbar, Alert } from '@mui/material';
 import { OrderItem } from '../components/OrderItemCard';
 
 interface OrderContextProps {
@@ -15,6 +17,8 @@ interface OrderContextProps {
   }) => Promise<void>;
   activeOrder: OrderItem | undefined;
   activeProgress: number;
+  toast: { message: string; severity: 'success' | 'info' | 'error' } | null;
+  clearToast: () => void;
 }
 
 const OrderContext = createContext<OrderContextProps | undefined>(undefined);
@@ -24,6 +28,26 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [activeProgress, setActiveProgress] = useState(0);
+  const [toast, setToast] = useState<{ message: string; severity: 'success' | 'info' | 'error' } | null>(null);
+
+  const clearToast = useCallback((event?: any, reason?: string) => {
+    console.log('[Toast Debug] clearToast called. Reason:', reason, 'Event:', event);
+    if (reason === 'clickaway') {
+      return;
+    }
+    setToast(null);
+  }, []);
+
+  useEffect(() => {
+    console.log('[Toast Debug] State changed to:', toast);
+  }, [toast]);
+
+  // Request browser Notification permission on mount
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -54,21 +78,92 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
       body: JSON.stringify(orderData),
     });
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch {
+      throw new Error(`Server returned an invalid response (HTTP ${response.status}).`);
+    }
 
     if (!response.ok) {
       throw new Error(result.error || 'Failed to place order.');
+    }
+
+    // Save order ID to trace for completion notification
+    if (result._id) {
+      try {
+        const stored = JSON.parse(localStorage.getItem('myOrderIds') || '[]');
+        localStorage.setItem('myOrderIds', JSON.stringify([...stored, result._id]));
+      } catch (err) {
+        console.error('[LocalStorage Error]', err);
+      }
     }
 
     // Instantly refresh list to show newly added order
     await fetchOrders();
   }, [fetchOrders]);
 
-  // Polling loop
+  // WebSocket + fallback polling loop
   useEffect(() => {
     fetchOrders();
-    const interval = setInterval(fetchOrders, 1000);
-    return () => clearInterval(interval);
+
+    // Connect to backend via proxy path /socket.io
+    const socket = io({
+      transports: ['websocket', 'polling']
+    });
+
+    socket.on('connect', () => {
+      console.log('[Socket] Connected to server successfully');
+    });
+
+    socket.on('order:updated', (updatedOrder: OrderItem) => {
+      console.log('[Socket Event] Received updated order:', updatedOrder);
+      
+      setOrders(prev => {
+        const exists = prev.some(o => o._id === updatedOrder._id);
+        if (exists) {
+          return prev.map(o => o._id === updatedOrder._id ? updatedOrder : o);
+        } else {
+          return [updatedOrder, ...prev];
+        }
+      });
+
+      // Show Desktop Notification when the user's specific order is done
+      try {
+        const storedOrderIds = JSON.parse(localStorage.getItem('myOrderIds') || '[]');
+        console.log('[Socket Event] storedOrderIds in localStorage:', storedOrderIds);
+        console.log('[Socket Event] orderId:', updatedOrder._id);
+        console.log('[Socket Event] is in storedOrderIds?:', storedOrderIds.includes(updatedOrder._id));
+        console.log('[Socket Event] status:', updatedOrder.status);
+
+        if (updatedOrder.status === 'done' && storedOrderIds.includes(updatedOrder._id)) {
+          console.log('[Socket Event] Notification trigger matched!');
+          // Trigger in-app toast fallback
+          setToast({
+            message: `☕ Your coffee is ready, ${updatedOrder.userName}!`,
+            severity: 'success'
+          });
+
+          // Trigger native desktop notification (if allowed)
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('☕ Coffee Ready!', {
+              body: `Hey ${updatedOrder.userName}, your coffee is ready for pickup!`,
+              requireInteraction: true
+            });
+          }
+        }
+      } catch (err) {
+        console.error('[Notification Error]', err);
+      }
+    });
+
+    // 5-second fallback poll loop in case socket disconnects
+    const fallbackInterval = setInterval(fetchOrders, 5000);
+
+    return () => {
+      socket.disconnect();
+      clearInterval(fallbackInterval);
+    };
   }, [fetchOrders]);
 
   // Determine active brewing order (the one with status === 'brewing' or oldest unfinished)
@@ -102,9 +197,24 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
       fetchOrders,
       addOrder,
       activeOrder,
-      activeProgress
+      activeProgress,
+      toast,
+      clearToast
     }}>
       {children}
+      {toast && (
+        <Snackbar
+          open={true}
+          autoHideDuration={6000}
+          onClose={clearToast}
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          sx={{ zIndex: 9999, mt: 8 }}
+        >
+          <Alert onClose={clearToast} severity={toast.severity} sx={{ width: '100%', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
+            {toast.message}
+          </Alert>
+        </Snackbar>
+      )}
     </OrderContext.Provider>
   );
 }
