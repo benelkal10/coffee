@@ -8,6 +8,8 @@ export interface MockOrder {
   delayMinutes: number;
   priority: number;
   done: boolean;
+  status?: 'pending' | 'brewing' | 'done';
+  brewingStartedAt?: Date;
   createdAt: Date;
   completedAt?: Date;
 }
@@ -47,10 +49,13 @@ const processMockQueue = async () => {
 
       const order = mockOrders.find((o) => o._id === nextJob.orderId);
       if (order) {
+        order.status = 'brewing';
+        order.brewingStartedAt = new Date();
         logger.info(`[Mock Worker] Brewing coffee for: ${order.userName} (ID: ${order._id})`);
         // Simulate 5 seconds coffee preparation
         await new Promise((resolve) => setTimeout(resolve, 5000));
         order.done = true;
+        order.status = 'done';
         order.completedAt = new Date();
         logger.info(`[Mock Worker] Coffee ready for: ${order.userName} (ID: ${order._id})`);
       }

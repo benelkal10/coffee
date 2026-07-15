@@ -8,6 +8,7 @@ export default function Home() {
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeProgress, setActiveProgress] = useState(0);
 
   const fetchOrders = async () => {
     try {
@@ -25,14 +26,31 @@ export default function Home() {
 
   useEffect(() => {
     fetchOrders();
-    const interval = setInterval(fetchOrders, 3000);
+    const interval = setInterval(fetchOrders, 1000);
     return () => clearInterval(interval);
   }, []);
 
   // Determine active order (the oldest unfinished order)
-  const activeOrder = [...orders]
-    .reverse()
-    .find(order => !order.done);
+  const activeOrder = orders.find(order => order.status === 'brewing') || 
+                      [...orders].reverse().find(order => !order.done && order.status !== 'done');
+
+  useEffect(() => {
+    if (!activeOrder || activeOrder.status !== 'brewing') {
+      setActiveProgress(0);
+      return;
+    }
+
+    const calculateProgress = () => {
+      const started = activeOrder.brewingStartedAt ? new Date(activeOrder.brewingStartedAt).getTime() : Date.now();
+      const elapsed = Date.now() - started;
+      const percentage = Math.min(100, Math.max(0, (elapsed / 5000) * 100));
+      setActiveProgress(percentage);
+    };
+
+    calculateProgress();
+    const progressInterval = setInterval(calculateProgress, 100);
+    return () => clearInterval(progressInterval);
+  }, [activeOrder?._id, activeOrder?.status, activeOrder?.brewingStartedAt]);
 
   return (
     <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -107,13 +125,36 @@ export default function Home() {
 
         <div style={{ flex: 1, minWidth: '250px' }}>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-            {activeOrder ? 'Machine Status: Brewing' : 'Machine Status: Idle'}
+            {activeOrder && activeOrder.status === 'brewing'
+              ? 'Machine Status: Brewing'
+              : activeOrder
+              ? 'Machine Status: Preparing'
+              : 'Machine Status: Idle'}
           </h2>
           {activeOrder ? (
-            <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
-              Preparing coffee for <strong style={{ color: 'var(--text-primary)' }}>{activeOrder.userName}</strong> ({activeOrder.role}).
-              {activeOrder.timeType === 'later' && ' (Delayed scheduled job)'}
-            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+                Preparing coffee for <strong style={{ color: 'var(--text-primary)' }}>{activeOrder.userName}</strong> ({activeOrder.role}).
+                {activeOrder.timeType === 'later' && ' (Delayed scheduled job)'}
+              </p>
+              {activeOrder.status === 'brewing' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 600 }}>
+                    <span style={{ color: 'var(--accent-secondary)' }}>Brewing Progress</span>
+                    <span style={{ color: 'var(--accent-secondary)' }}>{Math.round(activeProgress)}%</span>
+                  </div>
+                  <div style={{ width: '100%', height: '8px', background: 'var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
+                    <div style={{
+                      width: `${activeProgress}%`,
+                      height: '100%',
+                      background: 'linear-gradient(to right, var(--accent-primary), var(--accent-secondary))',
+                      transition: 'width 0.1s linear',
+                      boxShadow: '0 0 8px var(--accent-glow)'
+                    }} />
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
               The brewer is ready. Place an order to start.
